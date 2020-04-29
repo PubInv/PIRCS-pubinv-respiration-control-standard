@@ -59,6 +59,10 @@ Except in these cases, the second byte is the Ventilation Mode byte. There are a
 1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
 1. “A” -- Pressure Assist Mode: (Note: I’m not sure what the difference between this and “P” is.)
 1. “I” - SIMV mode.
-Modes equal to and above 128 are defined by the drive.
+1. Modes equal to and above 128 are defined by the drive.
+
+At the time of this writing (April 28th, 2020) this list of nodes is poorly defined and not rich enough.
+Improving these is the primary thing we have to do make this standard ready for use; we invite knowledgeable volunteers
+to suggest improvements via issues of pull requests.
 
 In all cases, the “air drive” must provide documentation as to what modes it supports, and any limitations it may have. For example, Dr. Erich Schulz has suggested that many current designs are underpowered. If a given machine cannot support a minute volume of more than 80 liters per minute, it should be so documented; this standard provides does not a means of capturing that limitation (thought test strategy may reveal it.)
