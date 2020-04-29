@@ -1,8 +1,8 @@
-The Public Invention Respiratory Control Standard (PIRCS) v0.1
+# The Public Invention Respiratory Control Standard (PIRCS) v0.1
 
 -- Robert L. Read, Geoff Mulligan, and Lauria Clarke
 
-# License
+## License
 
 This document and standard are released under the Creative Commons CC0
 license. However, you may not name any modification of this standard
@@ -11,7 +11,7 @@ If you make a valuable extension or modification, we hope you will
 submit it back to us, and if we agree, we will auugment the
 standard and change the version number.
 
-# Introduction
+## Introduction
 
 This document defines a standard, the Public Invention Respiratory Control Standard (PIRCS). The purpose of the PIRCS is to address the COVID-19 pandemic and more generally Composable Ventilator Systems by allowing the engineering community to design, test, manufacture and deploy a clinically effective, supply-chain resilient pandemic ventilation system.
 
@@ -19,7 +19,7 @@ The fundamental purpose of the PIRCS standard is to allow the “air drive” --
 
 Because this is a global problem and because the global supply chain is distressed and clinical needs are evolving, there will not be one solution to the problem of supplying pandemic ventilators. We go further and assert there should not even be pandemic ventilators, but rather there should be pandemic ventilation systems. If you cannot obtain one kind of air source, you should be able to use a different kind of air source without retraining or changing the user display and control mechanism. Although other modularity potentially exists, this standard only encapsulates the “air drive” module. For example, a sister standard already in use, the Public Invention Respiratory Data Standard (PIRDS), is used for the testing/monitoring/alarming piece.
 
-# The General Problem
+## The General Problem
 
 As of April 24th, there are at least 75 teams working on building ventilators. They use fans, pumps, pressure regulators, and AmbuBags as basic drive mechanisms. Each of these systems have engineering, usage, and economic tradeoffs. The globe needs multiple solutions in each category.
 The doctors and patients do not care how the air pushed. They only care that it is done in a reliable, controlled, and controllable manner. With a standard for controlling air drives and sufficient verification and quality control, we can  even imagine an AmuBag drive being unplugged and replaced with, for example, a pump, while the machine is paused for a few seconds without disturbing the patient or requiring resetting the control system or retraining the health care providers.
@@ -28,7 +28,7 @@ The fundamental problem requirement is to deliver air at a certain oxygen fracti
 
 Because this must be controllable, this is both a data standard and an electrical standard. Systems which claim to conform to this standard must be plug-compatible with a system that controls them. Such a system should also be plug-compatible with a test machine which will control and evaluate the air drive over a long period of time. The standard thus facilitates the difficult problem of testing any proposed air drive sufficiently for clinicians and approval agencies to gain confidence in it.
 
-# The Standard
+## The Standard
 
 An air drive will present an I2C 5-Volt electrical interface with a 4-pin JST or Molex-style connector. (size TBD.)
 
