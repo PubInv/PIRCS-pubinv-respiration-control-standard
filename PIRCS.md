@@ -30,7 +30,10 @@ Because this must be controllable, this is both a data standard and an electrica
 
 ## The Standard
 
-An air drive will present an I2C 5-Volt electrical interface with a 4-pin JST or Molex-style connector. (size TBD.)
+An Air Drive will present an I2C or SPI electrical interface with a 4-pin JST or Molex-style connector. (size TBD.)
+An Air Drive must clearly state what voltage level its outside interface operates at (5V, 3.3V, 1.8V or other.) 
+The non-communication eletrical power needed by the Air Drive is not a part of this standard.
+
 
 The air drive will listen on an address of (x??) (TBD) and will also listen for broadcast messages. A PIRCS v0.1 message will consist of precisely ten bytes. These bytes are clinically meaningful parameters. They are in order:
 
