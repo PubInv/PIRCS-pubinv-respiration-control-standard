@@ -42,7 +42,7 @@ together to form a header.
 When possible, we follow the principle of making data human-readable if possible. In particular, because this
 is meant in part for medical professionals, some unit types are chosen to conform that field.
 
-## Events
+##  Control Command
 
 The most common PIRCS data are events.
 
@@ -57,15 +57,22 @@ acceptable range of value. Thus every measurement fits within 12 bytes.
 
 Integers are stored in "Big-Endian" byte order within their 4 bytes.
 
-The Types are:
+The parameters are:
 
 1. M : Mode set as a char value listed below
 2. P : Pressure: cm H2O (a medical standard) times 10
-3. V : Volume in milliliters
+4. E : PEEP Pressure
+3. V : Target Volume in milliliters
 4. B : Breaths per minute times 10
 5. O : Oxygen FiO2, % times 10
-6. E : Emergency Stop (TBD)
+6. S : Emergency Stop (TBD)
 7. A : Alarm Control (TBD)
+
+The interpretations are:
+
+1. m : Minimum
+2. M : Maximum
+3. T : Target
 
 ### Modes
 
@@ -80,13 +87,7 @@ For the mode type, the second byte is the Ventilation Mode byte. There are a wid
 1. “I” - SIMV mode.
 1. Modes equal to and above 128 are defined by the drive.
 
-### Sample Measurement
-
-The following measurement is a temperature measurement (B1: ‘T’) from the third (B3: 2) device in the ambient air (B2: ‘B’). The measurement occurred at 35ms (B4 - B7: 0035) and has a value of 25 degrees C (B9 - B11: 0250).
-
-![SampleMeasurement](https://github.com/PubInv/respiration-data-standard/blob/master/images/sample_measurement.png)
-
-Hex Equivalent: 4D54 4202 0023 00FA
+### Control Command
 
 # JSON Expression
 
@@ -104,6 +105,7 @@ So for example, to set the target pressure:
 
 ```JavaScript
 { "set" : "P",
+  "int" : "T",
   "val" : 40
   }
 ```
