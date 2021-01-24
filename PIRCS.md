@@ -70,7 +70,7 @@ The interpretations are:
 
 ### Modes
 
-For the mode type, the second byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized.This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
+For the mode type, the third byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized. This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
 
 1. “C” - CPAP mode. The drive applies the pressure defined in the maximum/plateau pressure byte (byte 3) continuously. (Note: This mode can be used for testing compliance in certain useful but artificial (non-clinical) situations.)
 1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control.
@@ -95,12 +95,12 @@ codes will be used as is. The values will use the same
 scale as defined in the byte level specifcations. This means that no floating point number will
 at present ever appear in a value field.
 
-So for example, to set the target pressure:
+So for example, to set the target pressure to 40.0 cmH20:
 
 ```JavaScript
 { "set" : "P",
   "int" : "T",
-  "val" : 40
+  "val" : 400
   }
 ```
 
