@@ -44,25 +44,19 @@ is meant in part for medical professionals, some unit types are chosen to confor
 
 ##  Control Command
 
-The most common PIRCS data are events.
+The most common PIRCS data are command control events.
 
-![MeasurementByteFields](https://github.com/PubInv/respiration-data-standard/blob/master/images/measurement_fields.png)
-
-Measurements are of fixed length, and consisting the character "M", a measurement type character designator,
-a sensor designator consisting of a letter (location) and a number 0-255. 
-
-Finally, 32-bit signed integer
-is provided. The type of every measurement is multiplied by a decimal to allow an integer to express the
-acceptable range of value. Thus every measurement fits within 12 bytes.
+Commands are defined with 3 bytes [Setting, Interpretation, Value] with each byte followed by a 32-bit signed integer representing the value of each command. Where necessary, the value is multiplied by a decimal to allow an integer to express the acceptable range.
 
 Integers are stored in "Big-Endian" byte order within their 4 bytes.
 
 The parameters are:
 
 1. M : Mode set as a char value listed below
-2. P : Pressure: cm H2O (a medical standard) times 10
-4. E : PEEP Pressure
+2. P : Target Pressure, cm H2O (a medical standard) times 10
+4. E : PEEP Pressure, cm H20
 3. V : Target Volume in milliliters
+4. F : Target Flow rate, milliliters per second
 4. B : Breaths per minute times 10
 5. O : Oxygen FiO2, % times 10
 6. S : Emergency Stop (TBD)
