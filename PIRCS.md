@@ -59,12 +59,26 @@ Integers are stored in "Big-Endian" byte order within their 4 bytes.
 
 The Types are:
 
-1. M : Mode
+1. M : Mode set as a char value listed below
 2. P : Pressure: cm H2O (a medical standard) times 10
-3. V : Volume in millilieters
+3. V : Volume in milliliters
 4. B : Breaths per minute times 10
-5. O : Oxygen FiO2
-6. E : Emergency Stop
+5. O : Oxygen FiO2, % times 10
+6. E : Emergency Stop (TBD)
+7. A : Alarm Control (TBD)
+
+### Modes
+
+For the mode type, the second byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized.This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
+
+1. “C” - CPAP mode. The drive applies the pressure defined in the maximum/plateau pressure byte (byte 3) continuously. (Note: This mode can be used for testing compliance in certain useful but artificial (non-clinical) situations.)
+1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control.
+1. “V” -- Pressure Regulated Volume controlled ventilation. Within pressure limits, the machine provides the specified tidal volume with each breath.
+1. “S” -- Spontaneous Breathing Mode. The drive pauses after the exhalation period waiting to receive an initiation command, but in all cases will begin a breath within the specified number of seconds. If the maximum number of seconds is 255, a mandatory breath is not required only patient-triggered breaths are required.
+1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
+1. “A” -- Pressure Assist Mode: (Note: I’m not sure what the difference between this and “P” is.)
+1. “I” - SIMV mode.
+1. Modes equal to and above 128 are defined by the drive.
 
 ### Sample Measurement
 
