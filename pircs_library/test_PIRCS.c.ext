@@ -1,0 +1,81 @@
+/* Copyright Robert L. Read, 2020
+Released under MIT License
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include "minunit.h"
+#include "PIRCS.h"
+
+int tests_run = 0;
+
+// For debugging...
+void render_set_command(SetCommand* m) {
+  fprintf(stderr,"SetCommand:\n" );
+  fprintf(stderr,"Command %c\n", m->command);
+  fprintf(stderr,"Parameter %c\n", m->parameter);
+  fprintf(stderr,"Interpretation %c\n", m->interpretation);
+  fprintf(stderr,"Modifier %c\n", m->modifier);
+  fprintf(stderr,"Val %d\n", m->val);
+}
+
+
+/* Create a set_command, load it into an buffer and read it back */
+static char *test_can_create_set_command_and_read_back_as_byte_buffer() {
+
+  SetCommand m = {
+    'C','P','T','\0',250
+  };
+
+  const uint16_t BUFF_SIZE = 9;
+  uint8_t buff[BUFF_SIZE];
+  int err = fill_byte_buffer_set_command(&m,buff,BUFF_SIZE);
+  SetCommand mp = get_set_command_from_buffer(buff,BUFF_SIZE);
+
+  mu_assert("command", m.command == mp.command);
+  mu_assert("parameter", m.parameter == mp.parameter);
+  mu_assert("interpreation", m.interpretation == mp.interpretation);
+  mu_assert("modifier", m.modifier == mp.modifier);
+  mu_assert("value wrong", m.val == mp.val);
+  return 0;
+}
+
+static char *test_can_create_set_command_and_read_back_as_JSON() {
+  SetCommand m = {
+    'C','P','T','\0',250
+  };
+
+  const uint16_t BUFF_SIZE = 9;
+  char buff[BUFF_SIZE];
+  int err = fill_JSON_buffer_set_command(&m,buff,BUFF_SIZE);
+  mu_assert("buffer problem", err > 0);
+
+  SetCommand mp = get_set_command_from_JSON(buff,BUFF_SIZE);
+
+  mu_assert("command", m.command == mp.command);
+  mu_assert("parameter", m.parameter == mp.parameter);
+  mu_assert("interpretation", m.interpretation == mp.interpretation);
+  mu_assert("modifer", m.modifier == mp.modifier);
+  mu_assert("value wrong", m.val == mp.val);
+  return 0;
+}
+
+
+static char * all_tests() {
+  mu_run_test(test_can_create_set_command_and_read_back_as_byte_buffer);
+  //  mu_run_test(test_can_create_set_command_and_read_back_as_JSON);
+
+  return 0;
+}
+
+int main(int argc, char **argv) {
+    char *result = all_tests();
+    if (result != 0) {
+        printf("%s\n", result);
+    }
+    else {
+        printf("ALL TESTS PASSED\n");
+    }
+    printf("Tests run: %d\n", tests_run);
+    return result != 0;
+}

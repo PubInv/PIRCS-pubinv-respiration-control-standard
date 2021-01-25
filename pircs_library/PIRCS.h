@@ -1,0 +1,82 @@
+/* =====================================================================================
+MIT License
+
+Copyright (c) 2020 Public Invention
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+ *
+ *       Filename:  PIRCS.h
+ *
+ *    Description:
+ *
+ *        Version:  1.1
+ *        Created:  04/07/2020 10:35:51
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Robert L. Read read.robert@gmail.com
+ *   Organization:  Public Invention
+ *        License:  MIT
+ *
+ * =====================================================================================
+ */
+
+#ifndef PIRCS_H
+#define PIRCS_H
+
+#include <inttypes.h>
+
+
+#ifndef htons
+
+#define htons(x) ( (((x)<<8)&0xFF00) | (((x)>>8)&0xFF) )
+#define ntohs(x) htons(x)
+
+#define htonl(x) ( ((x)<<24 & 0xFF000000UL) | \
+                   ((x)<< 8 & 0x00FF0000UL) | \
+                   ((x)>> 8 & 0x0000FF00UL) | \
+                   ((x)>>24 & 0x000000FFUL) )
+#define ntohl(x) htonl(x)
+
+#endif // !defined(htons)
+
+// struct containing SetCoommandValues (fixed size 7 bytes)
+typedef struct SetCommand
+{
+  char     command; // This will be a C
+  char     parameter; // which param to set
+  char     interpretation; // the interprestation of the param (typically mimn, max, or target)
+  char     modifier;
+  int32_t  val;
+} SetCommand;
+
+
+/* Fill the byte buffer with a PIRCS-standard bytes from the
+   SetCommand Object */
+uint16_t fill_byte_buffer_set_command(SetCommand* s,uint8_t* buff,uint16_t blim);
+
+SetCommand get_set_command_from_buffer(uint8_t* buff,uint16_t blim);
+
+uint16_t fill_JSON_buffer_set_command(SetCommand* s,char* buff,uint16_t blim);
+
+SetCommand get_set_command_from_JSON(char* buff,uint16_t blim);
+
+
+#endif
