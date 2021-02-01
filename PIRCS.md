@@ -57,10 +57,11 @@ The parameters are:
 4. E : PEEP Pressure, cm H20
 3. V : Target Volume in milliliters
 4. F : Target Flow rate, milliliters per second
-4. B : Breaths per minute times 10
-5. O : Oxygen FiO2, % times 10
-6. S : Emergency Stop (TBD)
-7. A : Alarm Control (TBD)
+5. B : Breaths per minute times 10
+6. I : I:E Ratio, times 10
+7. O : Oxygen FiO2, % times 10
+8. S : Emergency Stop (TBD)
+9. A : Alarm Control (TBD)
 
 The interpretations are:
 
@@ -98,8 +99,10 @@ at present ever appear in a value field.
 So for example, to set the target pressure to 40.0 cmH20:
 
 ```JavaScript
-{ "set" : "P",
+{ "com": "C",
+  "par" : "P",
   "int" : "T",
+  "mod" : 0,
   "val" : 400
   }
 ```
