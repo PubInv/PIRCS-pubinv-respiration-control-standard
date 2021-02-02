@@ -46,7 +46,7 @@ is meant in part for medical professionals, some unit types are chosen to confor
 
 The most common PIRCS data are command control events.
 
-Commands are defined with 3 bytes [Setting, Interpretation, Value] with each byte followed by a 32-bit signed integer representing the value of each command. Where necessary, the value is multiplied by a decimal to allow an integer to express the acceptable range.
+Commands are defined with 5 bytes [Command, Parameter, Interpretation, Modification, Value] with each byte followed by a 32-bit signed integer representing the value of each command. Where necessary, the value is multiplied by a decimal to allow an integer to express the acceptable range.
 
 Integers are stored in "Big-Endian" byte order within their 4 bytes.
 
