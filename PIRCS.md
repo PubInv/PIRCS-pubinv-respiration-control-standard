@@ -1,6 +1,6 @@
 # The Public Invention Respiratory Control Standard (PIRCS) v0.1
 
--- Robert L. Read, Geoff Mulligan, and Lauria Clarke
+-- Robert L. Read, Geoff Mulligan, Lauria Clarke and Ben Coombs
 
 ## License
 
@@ -106,6 +106,18 @@ So for example, to set the target pressure to 40.0 cmH20:
   "val" : 400
   }
 ```
+
+# Proposed Parameter Enactment Mode
+
+In general when interacting with a ventilator a single PIRCS expression represents asserting a single parameter value.
+However a ventilator in operation must seamlessly affect such changes (for example, after the completion of the current breath.)
+A clinician may in fact want to change several parameters simultaneously, and not change one until all can be changed.
+This could be accomplished by allowing a set of PIRCS control expressions to be grouped (easily done as a JSON array.)
+
+However, another way to do this is is to enter an "accumulation moded" with PIRCS command, which would then be "enacted"
+at the end of a breath cycle after giving  an "enact" command.
+
+Both approaches have advantages. In a future versions of this protocol we will implement one or both.
 
 # License
 
