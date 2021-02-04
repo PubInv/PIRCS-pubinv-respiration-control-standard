@@ -75,7 +75,7 @@ SetCommand get_set_command_from_buffer(uint8_t* buff,uint16_t blim) {
 
 uint16_t fill_JSON_buffer_set_command(SetCommand* s,char* buff,uint16_t blim) {
   uint16_t rval = sprintf(buff,
-  "{ \"com\": \"%c\", \"par\": \"%c\", \"int\": %c, \"mod\": \"%c\", \"val\": %ld }",
+  "{ \"com\": \"%c\", \"par\": \"%c\", \"int\": \"%c\", \"mod\": \"%c\", \"val\": %ld }",
                      s->command,
                      s->parameter,
                      s->interpretation,
@@ -159,7 +159,7 @@ SetCommand get_set_command_from_JSON(char* buff,uint16_t blim) {
   //  scratch = strtok(NULL, "{,:}");
   //  fprintf(stderr,"scratch %s\n",scratch);
   //  fprintf(stderr,"buff %s\n",buff);
-  for(i = 0; i < 5; i++) {
+  for(i = 0; i < 4; i++) {
     char *k = strtok((i == 0) ? buff : NULL, "{,:}");
     char *v = strtok(NULL, "{,:}");
     assign_value_set_command(&m,k,v);

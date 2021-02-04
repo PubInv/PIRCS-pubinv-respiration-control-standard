@@ -42,15 +42,26 @@ static char *test_can_create_set_command_and_read_back_as_byte_buffer() {
 
 static char *test_can_create_set_command_and_read_back_as_JSON() {
   SetCommand m = {
-    'C','P','T','\0',250
+    //    'C','P','T','\0',250
+      'C','P','T','B',250
   };
 
   const uint16_t BUFF_SIZE = 9;
-  char buff[BUFF_SIZE];
-  int err = fill_JSON_buffer_set_command(&m,buff,BUFF_SIZE);
+  char buff[256];
+  int err = fill_JSON_buffer_set_command(&m,buff,256);
+
+  fprintf(stderr,"%s\n",buff);
+
   mu_assert("buffer problem", err > 0);
 
-  SetCommand mp = get_set_command_from_JSON(buff,BUFF_SIZE);
+  SetCommand mp = get_set_command_from_JSON(buff,256);
+  fprintf(stderr,"%s\n","XXXX");
+
+  fprintf(stderr,"%c\n",mp.command);
+  fprintf(stderr,"%c\n",mp.parameter);
+  fprintf(stderr,"%c\n",mp.interpretation);
+  fprintf(stderr,"%c\n",mp.modifier);
+  fprintf(stderr,"%d\n",mp.val);
 
   mu_assert("command", m.command == mp.command);
   mu_assert("parameter", m.parameter == mp.parameter);
@@ -62,8 +73,8 @@ static char *test_can_create_set_command_and_read_back_as_JSON() {
 
 
 static char * all_tests() {
-  mu_run_test(test_can_create_set_command_and_read_back_as_byte_buffer);
-  //  mu_run_test(test_can_create_set_command_and_read_back_as_JSON);
+  // mu_run_test(test_can_create_set_command_and_read_back_as_byte_buffer);
+  mu_run_test(test_can_create_set_command_and_read_back_as_JSON);
 
   return 0;
 }
