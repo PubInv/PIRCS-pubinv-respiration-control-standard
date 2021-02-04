@@ -1,6 +1,6 @@
 # The Public Invention Respiratory Control Standard (PIRCS) v0.1
 
--- Robert L. Read, Geoff Mulligan, and Lauria Clarke
+-- Robert L. Read, Geoff Mulligan, Lauria Clarke and Ben Coombs
 
 ## License
 
@@ -34,6 +34,97 @@ An Air Drive will present an I2C or SPI electrical interface with a 4-pin JST or
 An Air Drive must clearly state what voltage level its outside interface operates at (5V, 3.3V, 1.8V or other.) 
 The non-communication eletrical power needed by the Air Drive is not a part of this standard.
 
+## Event based protocol
+
+PIRCS data is a series of events. It has no headers, though some events provide meta-information and may be grouped
+together to form a header.
+
+When possible, we follow the principle of making data human-readable if possible. In particular, because this
+is meant in part for medical professionals, some unit types are chosen to conform that field.
+
+##  Control Command
+
+The most common PIRCS data are command control events.
+
+Commands are defined with 3 bytes [Setting, Interpretation, Value] with each byte followed by a 32-bit signed integer representing the value of each command. Where necessary, the value is multiplied by a decimal to allow an integer to express the acceptable range.
+
+Integers are stored in "Big-Endian" byte order within their 4 bytes.
+
+The parameters are:
+
+1. M : Mode set as a char value listed below
+2. P : Target Pressure, cm H2O (a medical standard) times 10
+4. E : PEEP Pressure, cm H20
+3. V : Target Volume in milliliters
+4. F : Target Flow rate, milliliters per second
+5. B : Breaths per minute times 10
+6. I : I:E Ratio, times 10
+7. O : Oxygen FiO2, % times 10
+8. S : Emergency Stop (TBD)
+9. A : Alarm Control (TBD)
+
+The interpretations are:
+
+1. m : Minimum
+2. M : Maximum
+3. T : Target
+
+### Modes
+
+For the mode type, the third byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized. This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
+
+1. “C” - CPAP mode. The drive applies the pressure defined in the maximum/plateau pressure byte (byte 3) continuously. (Note: This mode can be used for testing compliance in certain useful but artificial (non-clinical) situations.)
+1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control.
+1. “V” -- Pressure Regulated Volume controlled ventilation. Within pressure limits, the machine provides the specified tidal volume with each breath.
+1. “S” -- Spontaneous Breathing Mode. The drive pauses after the exhalation period waiting to receive an initiation command, but in all cases will begin a breath within the specified number of seconds. If the maximum number of seconds is 255, a mandatory breath is not required only patient-triggered breaths are required.
+1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
+1. “A” -- Pressure Assist Mode: (Note: I’m not sure what the difference between this and “P” is.)
+1. “I” - SIMV mode.
+1. Modes equal to and above 128 are defined by the drive.
+
+### Control Command
+
+# JSON Expression
+
+Although driven by a need for a byte-level protocol to communicate electronically, there is
+also need for a JSON-level expression of the standard. The obvious approach is to define
+an event as a JSON object. We hope to make it somewhat human readable, but maintain a
+direct connection to the Byte Level expression of the PIRCS standard.
+
+Our expression will use JSON objects with slightly more information names. The character
+codes will be used as is. The values will use the same
+scale as defined in the byte level specifcations. This means that no floating point number will
+at present ever appear in a value field.
+
+So for example, to set the target pressure to 40.0 cmH20:
+
+```JavaScript
+{ "com": "C",
+  "par" : "P",
+  "int" : "T",
+  "mod" : 0,
+  "val" : 400
+  }
+```
+
+# Proposed Parameter Enactment Mode
+
+In general when interacting with a ventilator a single PIRCS expression represents asserting a single parameter value.
+However a ventilator in operation must seamlessly affect such changes (for example, after the completion of the current breath.)
+A clinician may in fact want to change several parameters simultaneously, and not change one until all can be changed.
+This could be accomplished by allowing a set of PIRCS control expressions to be grouped (easily done as a JSON array.)
+
+However, another way to do this is is to enter an "accumulation moded" with PIRCS command, which would then be "enacted"
+at the end of a breath cycle after giving  an "enact" command.
+
+Both approaches have advantages. In a future versions of this protocol we will implement one or both.
+
+# License
+
+Released under a Creative Commons 0 (CC0) Universal License. All rights to the marks "PubInv" and "Public Invention" reserved.
+
+
+# Original Definition:
 
 The air drive will listen on an address of (x??) (TBD) and will also listen for broadcast messages. A PIRCS v0.1 message will consist of precisely ten bytes. These bytes are clinically meaningful parameters. They are in order:
 
