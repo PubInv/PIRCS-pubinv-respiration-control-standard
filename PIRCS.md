@@ -58,7 +58,7 @@ The parameters are:
 3. V : Target Volume in milliliters
 4. F : Target Flow rate, milliliters per second
 5. B : Breaths per minute times 10
-6. I : I:E Ratio, times 10
+6. I : E:I Ratio, times 10 (NOTE: I:E ratio is typical, but this standard uses E:I!)
 7. O : Oxygen FiO2, % times 10
 8. S : Emergency Stop (TBD)
 9. A : Alarm Control (TBD)
