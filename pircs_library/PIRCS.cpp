@@ -52,6 +52,46 @@ as a C file.
 
 
 
+// From: https://stackoverflow.com/questions/122616/how-do-i-trim-leading-trailing-whitespace-in-a-standard-way
+// Note: This function returns a pointer to a substring of the original string.
+// If the given string was allocated dynamically, the caller must not overwrite
+// that pointer with the returned value, since the original pointer must be
+// deallocated using the same allocator with which it was allocated.  The return
+// value must NOT be deallocated using free() etc.
+// These are oddly named to avoid name collision without having to add
+// name spaces here
+char *trimwhitespace_PIRCS(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  // Write new null terminator character
+  end[1] = '\0';
+
+  return str;
+}
+// Assume double quoted, simply remove the first ant last character.
+char *trimquotes_PIRCS(char *str)
+{
+  // Trim first quote...
+  str++;
+
+  // Trim trailing space
+  str[strlen(str) - 1] = '\0';
+  return str;
+}
+
+
+
 /* Fill the byte buffer with a PIRCS-standard bytes from the
    SetCommand Object */
 uint16_t fill_byte_buffer_set_command(SetCommand* s,uint8_t* buff,uint16_t blim) {
@@ -85,47 +125,11 @@ uint16_t fill_JSON_buffer_set_command(SetCommand* s,char* buff,uint16_t blim) {
 }
 
 
-// From: https://stackoverflow.com/questions/122616/how-do-i-trim-leading-trailing-whitespace-in-a-standard-way
-// Note: This function returns a pointer to a substring of the original string.
-// If the given string was allocated dynamically, the caller must not overwrite
-// that pointer with the returned value, since the original pointer must be
-// deallocated using the same allocator with which it was allocated.  The return
-// value must NOT be deallocated using free() etc.
-char *trimwhitespace(char *str)
-{
-  char *end;
-
-  // Trim leading space
-  while(isspace((unsigned char)*str)) str++;
-
-  if(*str == 0)  // All spaces?
-    return str;
-
-  // Trim trailing space
-  end = str + strlen(str) - 1;
-  while(end > str && isspace((unsigned char)*end)) end--;
-
-  // Write new null terminator character
-  end[1] = '\0';
-
-  return str;
-}
-// Assume double quoted, simply remove the first ant last character.
-char *trimquotes(char *str)
-{
-  // Trim first quote...
-  str++;
-
-  // Trim trailing space
-  str[strlen(str) - 1] = '\0';
-  return str;
-}
-
 
 int assign_value_set_command(SetCommand *s,char* k, char*v) {
   // First strip the key...
-  char *stripped_key = trimwhitespace(k);
-  char *stripped_value = trimwhitespace(v);
+  char *stripped_key = trimwhitespace_PIRCS(k);
+  char *stripped_value = trimwhitespace_PIRCS(v);
   if (0 == strcmp(stripped_key,"\"com\"")) {
     s->command = stripped_value[1];
   } else
