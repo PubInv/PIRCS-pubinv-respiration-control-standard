@@ -1,0 +1,22 @@
+{
+  "name": "PIRCS",
+  "version": "1.0.1",
+  "description": "The Public Invention Respiration Control Standard",
+  "keywords": "Respiration, ventilation, standard",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/PubInv/pubinv-respiration-control-standard"
+  },
+  "authors":
+  [
+    {
+      "name": "Robert L. Read",
+      "email": "read.robert@gmail.com",
+    },
+  ],
+  "license": "MIT",
+  "homepage": "https://www.pubinv.org/",
+  "dependencies": {
+  },
+}
