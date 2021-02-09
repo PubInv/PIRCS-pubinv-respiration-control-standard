@@ -42,6 +42,12 @@ together to form a header.
 When possible, we follow the principle of making data human-readable if possible. In particular, because this
 is meant in part for medical professionals, some unit types are chosen to conform that field.
 
+The protocol defines an "acknowledgement" as a particular kind of message which acknowledges the request by echoing
+the same data with two additional fields: An error number (zero if no error) and an status character. The protocol
+does not state how the acknowledgemnt is to be tranported, but a preferred embodiment is using the same mechanism
+by which the PIRCS command was transported in duplex. This will probably a serial port, but it could be an SPI communication
+or some other means.
+
 ##  Control Command
 
 The most common PIRCS data are command control events.
@@ -107,6 +113,26 @@ So for example, to set the target pressure to 40.0 cmH20:
   }
 ```
 
+# Acknowledgements
+
+Because we do not want to force microcontrolllers to fully implment JSON, we stick to the simplest possible
+JSON compatible embodiment, and add two fields to form an acknowldgemt that directly copies the data sent.
+Thus the acknowledgent for the command above is:
+```JavaScript
+{ "ack": "S",
+  "err": 0,
+  "com": "C",
+  "par" : "P",
+  "int" : "T",
+  "mod" : 0,
+  "val" : 400
+  }
+```
+1. The "ack" or acknowledgment field is a single character "S" for successful reception and execution. If the ack field 
+is anything other than "S", the means something went wrong. Specific meanings may be added later or remain
+implementation-specific will still conforming to this standard.
+1. The "err" field contains a 32-bit unsigned integer value of meaning unspecified by this standard.
+
 # Proposed Parameter Enactment Mode
 
 In general when interacting with a ventilator a single PIRCS expression represents asserting a single parameter value.
@@ -122,41 +148,3 @@ Both approaches have advantages. In a future versions of this protocol we will i
 # License
 
 Released under a Creative Commons 0 (CC0) Universal License. All rights to the marks "PubInv" and "Public Invention" reserved.
-
-
-# Original Definition:
-
-The air drive will listen on an address of (x??) (TBD) and will also listen for broadcast messages. A PIRCS v0.1 message will consist of precisely ten bytes. These bytes are clinically meaningful parameters. They are in order:
-
-1. The capital letter “C”. The stands for “Command”.
-1. A byte representing ventilation mode (see below for detail).
-1. A byte representing maximum, peak, or plateau pressure in units of (unsigned integral cm H2O).
-1. A byte representing minimum, or positive end-expiratory pressure (PEEP) in units of (unsigned integral cm H2O).
-1. A byte representing Respiration Rate in units of (unsigned integral breaths per minute).
-1. A byte representing desired Tidal Volume in units of (unsigned  integral 10 milliliters). That is a value of 30 would mean Tidal Volume of 300 ml, and a value of 100 would mean tidal volume of 1000 milliliters.
-1. A byte representing the I:E or Inhalation time to Exhalation time ration. The units of this are 10 divided by the prescribed I:E ratio (equivalently, 10 times the E:I ratio, the reciprocal of the commonly used I:E ratio.) Thus, a byte of 10 represents an I:E ratio of 1:1. A value of 100 represents an I:E ratio of 1:10.  A byte of 7 would represent the clinically unusual situation of a shorter exhalation time than the inhalation time, in a ratio of 10:7, or 1:0.7.
-1. A byte representing the maximum time in seconds the drive will pause before initiating the next breath. Units are unsigned seconds. A value of 13 means the machine will initiate a new breath in no more than 13 seconds after the end of the previous exhalation. For various reasons the drive may initiate the breath sooner.
-1. A byte representing the fraction of oxygen to be delivered, expressed as an unsigned percentage. A value of 100 would represent 100% oxygen. A value of 60 would represent 60% oxygen.
-1. A tenth byte is unused and may be defined by the air drive to have any documented meaning it chooses. For example, a particular drive might offer warming of the gas as a controllable feature via this byte.
-
-Additionally, there are 2 specifically defined byte sequences commands:
-
-1. The byte “C” followed by the byte “I” for “initiate”  and 8 bytes of value 255 means “initiate a spontaneous breath immediately if you are not in a state of currently respiring”. The drive should expect 3 such commands to be issued, any of which can be ignored once a breathing state is entered. “Initiates” command given before the end of an exhalation or no-ops are to be ignored.
-1. The byte “X” followed by a byte value T and 8 bytes of value 0 is the command for panic stop. The drive is to cease applying pressure immediately and not begin respiration again until T seconds have passed.
-
-Except in these cases, the second byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized.This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
-
-1. “C” - CPAP mode. The drive applies the pressure defined in the maximum/plateau pressure byte (byte 3) continuously. (Note: This mode can be used for testing compliance in certain useful but artificial (non-clinical) situations.)
-1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control.
-1. “V” -- Pressure Regulated Volume controlled ventilation. Within pressure limits, the machine provides the specified tidal volume with each breath.
-1. “S” -- Spontaneous Breathing Mode. The drive pauses after the exhalation period waiting to receive an initiation command, but in all cases will begin a breath within the specified number of seconds. If the maximum number of seconds is 255, a mandatory breath is not required only patient-triggered breaths are required.
-1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
-1. “A” -- Pressure Assist Mode: (Note: I’m not sure what the difference between this and “P” is.)
-1. “I” - SIMV mode.
-1. Modes equal to and above 128 are defined by the drive.
-
-At the time of this writing (April 28th, 2020) this list of nodes is poorly defined and not rich enough.
-Improving these is the primary thing we have to do make this standard ready for use; we invite knowledgeable volunteers
-to suggest improvements via issues of pull requests.
-
-In all cases, the “air drive” must provide documentation as to what modes it supports, and any limitations it may have. For example, Dr. Erich Schulz has suggested that many current designs are underpowered. If a given machine cannot support a minute volume of more than 80 liters per minute, it should be so documented; this standard provides does not a means of capturing that limitation (thought test strategy may reveal it.)
