@@ -68,6 +68,22 @@ typedef struct SetCommand
 } SetCommand;
 
 
+
+typedef struct Acknowledgement
+{
+  char     ack; // "S" means success
+  char padding0; // we want the 32 bit values to end on word boundaries!
+  char padding1;
+  char padding2;
+  uint32_t  err;
+  char     command;
+  char     parameter;
+  char     interpretation;
+  char     modifier;
+  int32_t  val;
+} Acknowledgement;
+
+
 /* Fill the byte buffer with a PIRCS-standard bytes from the
    SetCommand Object */
 uint16_t fill_byte_buffer_set_command(SetCommand* s,uint8_t* buff,uint16_t blim);
@@ -77,6 +93,22 @@ SetCommand get_set_command_from_buffer(uint8_t* buff,uint16_t blim);
 uint16_t fill_JSON_buffer_set_command(SetCommand* s,char* buff,uint16_t blim);
 
 SetCommand get_set_command_from_JSON(char* buff,uint16_t blim);
+
+Acknowledgement get_success_ack_from_command(SetCommand c);
+Acknowledgement get_error_ack_from_command(SetCommand c, char e, uint32_t err_no);
+
+Acknowledgement get_ack_from_JSON_buffer(char *buff,uint16_t size);
+uint16_t fill_JSON_buffer_with_ack(Acknowledgement *ack,
+                                    char *buff,
+                                    uint16_t size);
+
+// Return true (1) if the command matches the acknowledgement,
+// whether or not it is a succes!!!
+uint8_t match_PIRCS_com_and_ack(SetCommand *com,Acknowledgement *ack);
+
+// Return true if the command matches AND the acknowledgment is a
+// success.
+uint8_t match_successful_PIRCS_com_and_ack(SetCommand *com,Acknowledgement *ack);
 
 
 #endif

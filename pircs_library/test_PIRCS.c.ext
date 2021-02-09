@@ -10,13 +10,28 @@ Released under MIT License
 int tests_run = 0;
 
 // For debugging...
-void render_set_command(SetCommand* m) {
-  fprintf(stderr,"SetCommand:\n" );
+void render_set_command_raw(SetCommand* m) {
   fprintf(stderr,"Command %c\n", m->command);
   fprintf(stderr,"Parameter %c\n", m->parameter);
   fprintf(stderr,"Interpretation %c\n", m->interpretation);
   fprintf(stderr,"Modifier %c\n", m->modifier);
   fprintf(stderr,"Val %d\n", m->val);
+}
+
+void render_set_command(SetCommand* m) {
+  fprintf(stderr,"SetCommand:\n" );
+  render_set_command_raw(m);
+}
+
+void render_ack(Acknowledgement* a) {
+  fprintf(stderr,"Acknowledgement:\n" );
+  fprintf(stderr,"Ack %c\n", a->ack);
+  fprintf(stderr,"Error %d\n", a->err);
+  fprintf(stderr,"Command %c\n", a->command);
+  fprintf(stderr,"Parameter %c\n", a->parameter);
+  fprintf(stderr,"Interpretation %c\n", a->interpretation);
+  fprintf(stderr,"Modifier %c\n", a->modifier);
+  fprintf(stderr,"Val %d\n", a->val);
 }
 
 
@@ -55,14 +70,6 @@ static char *test_can_create_set_command_and_read_back_as_JSON() {
   mu_assert("buffer problem", err > 0);
 
   SetCommand mp = get_set_command_from_JSON(buff,256);
-  fprintf(stderr,"%s\n","XXXX");
-
-  fprintf(stderr,"%c\n",mp.command);
-  fprintf(stderr,"%c\n",mp.parameter);
-  fprintf(stderr,"%c\n",mp.interpretation);
-  fprintf(stderr,"%c\n",mp.modifier);
-  fprintf(stderr,"%d\n",mp.val);
-
   mu_assert("command", m.command == mp.command);
   mu_assert("parameter", m.parameter == mp.parameter);
   mu_assert("interpretation", m.interpretation == mp.interpretation);
@@ -71,10 +78,69 @@ static char *test_can_create_set_command_and_read_back_as_JSON() {
   return 0;
 }
 
+static char *test_JSON_fill_works_for_acks() {
+  SetCommand m = {
+      'C','P','T','B',250
+  };
+
+  // Now create an acknowledgement and verify it
+  Acknowledgement ack = get_success_ack_from_command(m);
+  //  render_ack(&ack);
+  mu_assert("ack dose not match command",match_PIRCS_com_and_ack(&m,&ack));
+
+  // Now create an json ack...
+  char buff[256];
+  fill_JSON_buffer_with_ack(&ack,buff,256);
+  fprintf(stderr,"%s\n",buff );
+  Acknowledgement ack_ver = get_ack_from_JSON_buffer(buff,256);
+  //  render_ack(&ack_ver);
+  mu_assert("ack from JSON buffer does not match!",match_PIRCS_com_and_ack(&m,&ack_ver));
+  return 0;
+}
+
+
+static char *test_can_create_successful_set_command_and_acknowldegement_and_read_back_as_JSON() {
+  SetCommand m = {
+      'C','P','T','B',250
+  };
+  SetCommand mp = {
+      'C','P','T','B',251
+  };
+
+  // Now create an acknowledgement and verify it
+  Acknowledgement ack = get_success_ack_from_command(m);
+  mu_assert("ack does not mactch matches command",match_PIRCS_com_and_ack(&m,&ack));
+  mu_assert("mismatch incorrecty reported as match",!match_PIRCS_com_and_ack(&mp,&ack));
+
+  return 0;
+}
+
+static char *test_can_create_error_set_command_and_acknowldegement_and_read_back_as_JSON() {
+  SetCommand m = {
+      'C','P','T','B',250
+  };
+
+  // Now create an acknowledgement and verify it
+  Acknowledgement ack = get_error_ack_from_command(m,'E',93);
+  mu_assert("verifify2",match_PIRCS_com_and_ack(&m,&ack));
+  // Now create an json ack...
+  char buff[256];
+  fill_JSON_buffer_with_ack(&ack,buff,256);
+  Acknowledgement ack_ver = get_ack_from_JSON_buffer(buff,256);
+
+  mu_assert("verifify2",match_PIRCS_com_and_ack(&m,&ack_ver));
+  mu_assert("verifify error is not success",!match_successful_PIRCS_com_and_ack(&m,&ack_ver));
+
+  return 0;
+}
+
 
 static char * all_tests() {
   // mu_run_test(test_can_create_set_command_and_read_back_as_byte_buffer);
   mu_run_test(test_can_create_set_command_and_read_back_as_JSON);
+  mu_run_test(test_JSON_fill_works_for_acks);
+  mu_run_test(test_can_create_successful_set_command_and_acknowldegement_and_read_back_as_JSON);
+  mu_run_test(test_can_create_error_set_command_and_acknowldegement_and_read_back_as_JSON);
 
   return 0;
 }

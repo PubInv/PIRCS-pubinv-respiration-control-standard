@@ -115,7 +115,7 @@ SetCommand get_set_command_from_buffer(uint8_t* buff,uint16_t blim) {
 
 uint16_t fill_JSON_buffer_set_command(SetCommand* s,char* buff,uint16_t blim) {
   uint16_t rval = sprintf(buff,
-  "{ \"com\": \"%c\", \"par\": \"%c\", \"int\": \"%c\", \"mod\": \"%c\", \"val\": %ld }",
+  "{ \"com\": \"%c\", \"par\": \"%c\", \"int\": \"%c\", \"mod\": \"%c\", \"val\": %d }",
                      s->command,
                      s->parameter,
                      s->interpretation,
@@ -151,6 +151,37 @@ int assign_value_set_command(SetCommand *s,char* k, char*v) {
   return 1;
 }
 
+int assign_value_ack(Acknowledgement *a,char* k, char*v) {
+  // First strip the key...
+  char *stripped_key = trimwhitespace_PIRCS(k);
+  char *stripped_value = trimwhitespace_PIRCS(v);
+  if (0 == strcmp(stripped_key,"\"ack\"")) {
+    a->command = stripped_value[1];
+  } else
+  if (0 == strcmp(stripped_key,"\"err\"")) {
+    a->command = atoi(stripped_value);
+  } else
+  if (0 == strcmp(stripped_key,"\"com\"")) {
+    a->command = stripped_value[1];
+  } else
+  if (0 == strcmp(stripped_key,"\"par\"")) {
+    a->parameter = stripped_value[1];
+  } else
+  if (0 == strcmp(stripped_key,"\"int\"")) {
+    a->interpretation = stripped_value[1];
+  } else
+  if (0 == strcmp(stripped_key,"\"mod\"")) {
+    a->modifier = stripped_value[1];
+  } else
+  if (0 == strcmp(stripped_key,"\"val\"")) {
+    a->val = atoi(stripped_value);
+  } else {
+    fprintf(stderr,"Key Error: %s",stripped_key);
+    return 0;
+  }
+  return 1;
+}
+
 
 // Note: This is a VERY weak and specialized JSON parser
 // This will fail if a string contains a colon!!!
@@ -172,4 +203,71 @@ SetCommand get_set_command_from_JSON(char* buff,uint16_t blim) {
   char *v = strtok(NULL,"{,:}");
   assign_value_set_command(&m,k,v);
   return m;
+}
+
+
+Acknowledgement get_raw_ack_from_command(SetCommand m) {
+  Acknowledgement ack;
+  ack.command = m.command;
+  ack.parameter = m.parameter;
+  ack.interpretation = m.interpretation;
+  ack.modifier = m.modifier;
+  ack.val = m.val;
+  return ack;
+}
+
+Acknowledgement get_success_ack_from_command(SetCommand m) {
+  Acknowledgement ack = get_raw_ack_from_command(m);
+  ack.ack = 'S';
+  ack.err = 0;
+  return ack;
+}
+Acknowledgement get_ack_from_JSON_buffer(char *buff,uint16_t size) {
+  int i = 0;
+  Acknowledgement ack;
+  for(i = 0; i < 6; i++) {
+    char *k = strtok((i == 0) ? buff : NULL, "{,:}");
+    char *v = strtok(NULL, "{,:}");
+    assign_value_ack(&ack,k,v);
+  }
+  char *k = strtok(NULL,"{,:}");
+  char *v = strtok(NULL,"{,:}");
+  assign_value_ack(&ack,k,v);
+  return ack;
+}
+
+Acknowledgement get_error_ack_from_command(SetCommand c, char e, uint32_t err_no) {
+
+}
+
+uint16_t fill_JSON_buffer_with_ack(Acknowledgement *ack,
+                                    char *buff,
+                                    uint16_t size) {
+  uint16_t rval = sprintf(buff,
+                          "{ \"ack\": \"%c\", \"err\": \"%ld\", \"com\": \"%c\", \"par\": \"%c\", \"int\": \"%c\", \"mod\": \"%c\", \"val\": %d }",
+                          ack->ack,
+                          ack->err,
+                     ack->command,
+                     ack->parameter,
+                     ack->interpretation,
+                     ack->modifier,
+                     ack->val);
+  return rval;
+}
+uint8_t match_PIRCS_com_and_ack(SetCommand *com,Acknowledgement *ack) {
+
+  return
+    (ack->command == com->command) &&
+    (ack->parameter == com->parameter) &&
+    (ack->interpretation == com->interpretation) &&
+    (ack->modifier == com->modifier) &&
+    (ack->val == com->val);
+
+}
+
+uint8_t match_successful_PIRCS_com_and_ack(SetCommand *com,Acknowledgement *ack) {
+  return
+    ack->ack == 'S' &&
+    ack->err == 0 &&
+    match_PIRCS_com_and_ack(com,ack);
 }
