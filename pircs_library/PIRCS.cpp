@@ -216,6 +216,8 @@ Acknowledgement get_raw_ack_from_command(SetCommand m) {
   return ack;
 }
 
+// TODO: Change this to a pointer; we
+// don't want to pass structures!
 Acknowledgement get_success_ack_from_command(SetCommand m) {
   Acknowledgement ack = get_raw_ack_from_command(m);
   ack.ack = 'S';
@@ -236,6 +238,8 @@ Acknowledgement get_ack_from_JSON_buffer(char *buff,uint16_t size) {
   return ack;
 }
 
+// TODO: Change this to a pointer; we
+// don't want to pass structures!
 Acknowledgement get_error_ack_from_command(SetCommand c, char e, uint32_t err_no) {
 
 }

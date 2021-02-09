@@ -1,6 +1,6 @@
 {
   "name": "PIRCS",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The Public Invention Respiration Control Standard",
   "keywords": "Respiration, ventilation, standard",
   "repository":
@@ -12,7 +12,7 @@
   [
     {
       "name": "Robert L. Read",
-      "email": "read.robert@gmail.com",
+      "email": "read.robert@gmail.com"
     },
   ],
   "license": "MIT",
