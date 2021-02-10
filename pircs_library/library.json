@@ -13,10 +13,10 @@
     {
       "name": "Robert L. Read",
       "email": "read.robert@gmail.com"
-    },
+    }
   ],
   "license": "MIT",
   "homepage": "https://www.pubinv.org/",
   "dependencies": {
-  },
+  }
 }
