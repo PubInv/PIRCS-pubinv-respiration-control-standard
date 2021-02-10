@@ -206,19 +206,19 @@ SetCommand get_set_command_from_JSON(char* buff,uint16_t blim) {
 }
 
 
-Acknowledgement get_raw_ack_from_command(SetCommand m) {
+Acknowledgement get_raw_ack_from_command(SetCommand *m) {
   Acknowledgement ack;
-  ack.command = m.command;
-  ack.parameter = m.parameter;
-  ack.interpretation = m.interpretation;
-  ack.modifier = m.modifier;
-  ack.val = m.val;
+  ack.command = m->command;
+  ack.parameter = m->parameter;
+  ack.interpretation = m->interpretation;
+  ack.modifier = m->modifier;
+  ack.val = m->val;
   return ack;
 }
 
 // TODO: Change this to a pointer; we
 // don't want to pass structures!
-Acknowledgement get_success_ack_from_command(SetCommand m) {
+Acknowledgement get_success_ack_from_command(SetCommand *m) {
   Acknowledgement ack = get_raw_ack_from_command(m);
   ack.ack = 'S';
   ack.err = 0;
@@ -240,8 +240,11 @@ Acknowledgement get_ack_from_JSON_buffer(char *buff,uint16_t size) {
 
 // TODO: Change this to a pointer; we
 // don't want to pass structures!
-Acknowledgement get_error_ack_from_command(SetCommand c, char e, uint32_t err_no) {
-
+Acknowledgement get_error_ack_from_command(SetCommand *c, char e, uint32_t err_no) {
+  Acknowledgement ack = get_raw_ack_from_command(c);
+  ack.ack = e;
+  ack.err = err_no;
+  return ack;
 }
 
 uint16_t fill_JSON_buffer_with_ack(Acknowledgement *ack,

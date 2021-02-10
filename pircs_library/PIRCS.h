@@ -94,8 +94,8 @@ uint16_t fill_JSON_buffer_set_command(SetCommand* s,char* buff,uint16_t blim);
 
 SetCommand get_set_command_from_JSON(char* buff,uint16_t blim);
 
-Acknowledgement get_success_ack_from_command(SetCommand c);
-Acknowledgement get_error_ack_from_command(SetCommand c, char e, uint32_t err_no);
+Acknowledgement get_success_ack_from_command(SetCommand *c);
+Acknowledgement get_error_ack_from_command(SetCommand *c, char e, uint32_t err_no);
 
 Acknowledgement get_ack_from_JSON_buffer(char *buff,uint16_t size);
 uint16_t fill_JSON_buffer_with_ack(Acknowledgement *ack,
