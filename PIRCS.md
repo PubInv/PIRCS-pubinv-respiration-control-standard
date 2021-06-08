@@ -8,7 +8,7 @@ This document and standard are released under the Creative Commons CC0
 license. However, you may not name any modification of this standard
 the "PIRCS" or "Public Invention Respiratory Control Standard".
 If you make a valuable extension or modification, we hope you will
-submit it back to us, and if we agree, we will auugment the
+submit it back to us, and if we agree, we will augment the
 standard and change the version number.
 
 ## Introduction
@@ -32,7 +32,7 @@ Because this must be controllable, this is both a data standard and an electrica
 
 An Air Drive will present an I2C or SPI electrical interface with a 4-pin JST or Molex-style connector. (size TBD.)
 An Air Drive must clearly state what voltage level its outside interface operates at (5V, 3.3V, 1.8V or other.) 
-The non-communication eletrical power needed by the Air Drive is not a part of this standard.
+The non-communication electrical power needed by the Air Drive is not a part of this standard.
 
 ## Event based protocol
 
@@ -80,7 +80,7 @@ The interpretations are:
 For the mode type, the third byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized. This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
 
 1. “C” - CPAP mode. The drive applies the pressure defined in the maximum/plateau pressure byte (byte 3) continuously. (Note: This mode can be used for testing compliance in certain useful but artificial (non-clinical) situations.)
-1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control.
+1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control).
 1. “V” -- Pressure Regulated Volume controlled ventilation. Within pressure limits, the machine provides the specified tidal volume with each breath.
 1. “S” -- Spontaneous Breathing Mode. The drive pauses after the exhalation period waiting to receive an initiation command, but in all cases will begin a breath within the specified number of seconds. If the maximum number of seconds is 255, a mandatory breath is not required only patient-triggered breaths are required.
 1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
@@ -99,7 +99,7 @@ direct connection to the Byte Level expression of the PIRCS standard.
 
 Our expression will use JSON objects with slightly more information names. The character
 codes will be used as is. The values will use the same
-scale as defined in the byte level specifcations. This means that no floating point number will
+scale as defined in the byte level specifications. This means that no floating point number will
 at present ever appear in a value field.
 
 So for example, to set the target pressure to 40.0 cmH20:
@@ -115,9 +115,9 @@ So for example, to set the target pressure to 40.0 cmH20:
 
 # Acknowledgements
 
-Because we do not want to force microcontrolllers to fully implment JSON, we stick to the simplest possible
-JSON compatible embodiment, and add two fields to form an acknowldgemt that directly copies the data sent.
-Thus the acknowledgent for the command above is:
+Because we do not want to force microcontrolllers to fully implement JSON, we stick to the simplest possible
+JSON compatible embodiment, and add two fields to form an acknowledgement that directly copies the data sent.
+Thus the acknowledgement for the command above is:
 ```JavaScript
 { "ack": "S",
   "err": 0,
