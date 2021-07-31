@@ -31,7 +31,7 @@ Because this must be controllable, this is both a data standard and an electrica
 ## The Standard
 
 An Air Drive will present an I2C or SPI electrical interface with a 4-pin JST or Molex-style connector. (size TBD.)
-An Air Drive must clearly state what voltage level its outside interface operates at (5V, 3.3V, 1.8V or other.) 
+An Air Drive must clearly state what voltage level its outside interface operates at (5V, 3.3V, 1.8V or other.)
 The non-communication eletrical power needed by the Air Drive is not a part of this standard.
 
 ## Event based protocol
@@ -86,6 +86,10 @@ For the mode type, the third byte is the Ventilation Mode byte. There are a wide
 1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
 1. “A” -- Pressure Assist Mode: (Note: I’m not sure what the difference between this and “P” is.)
 1. “I” - SIMV mode.
+1. "s" -- emergency stop mode
+1. "c" -- continue from emergency stop mode
+1. "1" -- "one breath mode" --- for engineering, take a single breath
+1. "h" -- "home" the machine for maximum readiness. Enter emergency stop mode.
 1. Modes equal to and above 128 are defined by the drive.
 
 ### Control Command
@@ -128,7 +132,7 @@ Thus the acknowledgent for the command above is:
   "val" : 400
   }
 ```
-1. The "ack" or acknowledgment field is a single character "S" for successful reception and execution. If the ack field 
+1. The "ack" or acknowledgment field is a single character "S" for successful reception and execution. If the ack field
 is anything other than "S", the means something went wrong. Specific meanings may be added later or remain
 implementation-specific will still conforming to this standard.
 1. The "err" field contains a 32-bit unsigned integer value of meaning unspecified by this standard.
