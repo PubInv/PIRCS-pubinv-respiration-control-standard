@@ -58,7 +58,7 @@ Integers are stored in "Big-Endian" byte order within their 4 bytes.
 
 The parameters are:
 
-1. M : Mode set as a char value listed below
+1. M : Mode set as a char value listed below based on "int"
 2. P : Target Pressure, cm H2O (a medical standard) times 10
 4. E : PEEP Pressure, cm H20
 3. V : Target Volume in milliliters
@@ -77,13 +77,17 @@ The interpretations are:
 
 ### Modes
 
-For the mode type, the third byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized. This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
+For the mode type, the third byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized.
+These are set by using the command "mode" (M) and setting the character
+below as the "int" or interpretation value to one of the characters below.
+This document is the beginning of a particular standardization of the most common and easy to implement modes. The following modes are defined as part of the standard:
 
 1. “C” - CPAP mode. The drive applies the pressure defined in the maximum/plateau pressure byte (byte 3) continuously. (Note: This mode can be used for testing compliance in certain useful but artificial (non-clinical) situations.)
 1. “B” - BiPAP mode. The drive applies the maximum/plateau pressure for the inhalation phase, and at the PEEP pressure for exhalation. (Note: a more advanced mode will allow spontaneous breathing and volume control.
 1. “V” -- Pressure Regulated Volume controlled ventilation. Within pressure limits, the machine provides the specified tidal volume with each breath.
+1. “P” -- Pressure Ventilation Control mode : a simple mode of holding a constant input pressure.
 1. “S” -- Spontaneous Breathing Mode. The drive pauses after the exhalation period waiting to receive an initiation command, but in all cases will begin a breath within the specified number of seconds. If the maximum number of seconds is 255, a mandatory breath is not required only patient-triggered breaths are required.
-1. “P” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
+1. “R” -- Pressure Support Mode: patient initiates breaths, but pressure is automatically maintained at the set pressure level.
 1. “A” -- Pressure Assist Mode: (Note: I’m not sure what the difference between this and “P” is.)
 1. “I” - SIMV mode.
 1. "s" -- emergency stop mode
@@ -117,6 +121,8 @@ So for example, to set the target pressure to 40.0 cmH20:
   }
 ```
 
+The "mod" parameter is a single unsigend integer between 0 and 255.
+
 # Acknowledgements
 
 Because we do not want to force microcontrolllers to fully implment JSON, we stick to the simplest possible
@@ -136,6 +142,131 @@ Thus the acknowledgent for the command above is:
 is anything other than "S", the means something went wrong. Specific meanings may be added later or remain
 implementation-specific will still conforming to this standard.
 1. The "err" field contains a 32-bit unsigned integer value of meaning unspecified by this standard.
+
+# Patient Identification and description commands
+
+This is a new feature, added on September 25th, 2021.
+
+Dr. Erich Schulz pointed out a need for the ability to uniquely identify a patient (real or simulated)
+returned by the sibling protocol PIRDS, and that this can be accomplished by creating a command
+to set it.
+
+We therefore create a new class of PIRCS instructions, which we will call "Guidance" and denote
+with "G", to distinguish from the commands, denoted by "C".
+
+The first type of guidance is a patient identifying guidance. It deviates from the
+short, fixed-size form (in terms of byte-buinding) of the command. In JavaScript, the
+paradigm is:
+
+```JavaScript
+{ "com": "G",
+  "par" : "I",
+  "val" : "forty character string goes here"
+  "sht" : 492
+  }
+```
+The "G" stands for Guidance and the "I" stands for "Identifcation". A software system
+receiving PIRCS on listening channel devoted to a single patient may take such guidance
+as sufficient to store this 40-character string and return it as a patient ID.
+
+The "sht" field is a 32-bit unsigned integer field used as a "shorthand" for the 40-character
+val, so that PIRDS commands by kept to a reasonable length. Both the sender and the receiver
+should interpret the shorthand as a temporary code for the full-length val.
+
+Our intention is that the "sht" field will be added to the PIRDS commands, to separate
+data from individual patients if multiple patient data streams are unable to be separated
+any other way.
+
+The second type of guidance is guidance about the patient condition.
+This guidance is given intentional meaning by this standard.
+However, the use or non-use of this guidance is left to the machine
+interpreting the guidance. For example, it may change its behavior
+in response to a known disease condition or the size of the patient.
+The behavior fo the devices in response to guidance is outside the scope
+of this standard.
+
+The paradigm for guidance is the same as the paradigm for the command,
+and uses the same type structure. "par" and "int" are single characters,
+and the "mod" parameter is a single unsigend integer between 0 and 255.
+
+```JavaScript
+{ "com": "G",
+  "par" : "X",
+  "int" : "Y",
+  "mod" : 0,
+  "val" : 45969,
+  }
+```
+
+The parameters set with "par" command are different in guidance ("G") than
+they are in commands ("C"). They are:
+
+1. W : Weight of the patient in grams.
+1. H : Height of the patient in mm.
+1. G : Gender of the patient. The "int" field should be "M" for male, "F" for female. Other genders are permissible
+but are not defined by this standard.
+1. D : Disease condition. (Please see below for the meaning of the "par" parameter in this case.). When
+a disease condition is specified, the "val" field should contain a number betwen 0 and 100 representing the
+severity of the condition. The meaning of this severity is not defined by this standard, but it should
+be a monotone increasing function of disease condition (that is, higher when the condition is more severe.)
+
+For example, to assert the patient is a male weighing 106 kilograms and 178 cm, the three independent
+pieces of guidance might be:
+
+```JavaScript
+{ "com": "G",
+  "par" : "W",
+  "int" : "X",
+  "mod" : 0,
+  "val" : 106000,
+  }
+```
+Note: Although it would be unusual to measure weight of a human being in grams, we provide this
+precision for the possibility of neonatal patients. The PIRDS and PIRCS standards never
+use floating point numbers to avoid the risk of floating-point induces mathematical error
+and because microprocessing equipment may not be able to produce them easily.
+
+```JavaScript
+{ "com": "G",
+  "par" : "H",
+  "int" : "X",
+  "mod" : 0,
+  "val" : 1780,
+  }
+```
+
+```JavaScript
+{ "com": "G",
+  "par" : "G",
+  "int" : "M",
+  "mod" : 0,
+  "val" : 0,
+  }
+```
+
+
+The currently recognized disease condtions are:
+1. "D" : Disconnect. This is a detection that disconnect of the airway has occured. This should likely
+be treated as a severe condition in all cases except a severity of "0" which may be used to assert
+the absence of a disconnect.
+1. "C" : Coughing or straining. This indicates patient-ventilator asynchrony in the form of coughing
+detected by whatever means. A subsequent guidance may be provided when the patient quits coughing.
+1. "S" : Asthma. The patient is asthmatic with the indicated severity.
+1. "E" : Emphysema. The patient is emphysematic with the indicated severity.
+1. "A" : ARDS. Acute respiratory distress syndrome. At present this standard makes no attempt
+to distinguish various types of ARDS.
+1. "P" : Pneumothorax. Pneumothorax is a life-threatening emergency condition.
+
+For example, to indicate that the patient is asthmatic, the following guidance could be used:
+
+```JavaScript
+{ "com": "G",
+  "par" : "S",
+  "int" : "X",
+  "mod" : 0,
+  "val" : 75,
+  }
+```
 
 # Proposed Parameter Enactment Mode
 
