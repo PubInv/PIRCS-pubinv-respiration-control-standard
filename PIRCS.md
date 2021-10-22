@@ -75,6 +75,9 @@ The interpretations are:
 2. M : Maximum
 3. T : Target
 
+Except when the parameter is "M", in which case the interpretation holds the character described belows. This allows the "val"
+field to be universally an integer, and "int" field to be universally a single character.
+
 ### Modes
 
 For the mode type, the third byte is the Ventilation Mode byte. There are a wide variety of ventilation modes and names are not entirely standardized.
@@ -118,6 +121,15 @@ So for example, to set the target pressure to 40.0 cmH20:
   "int" : "T",
   "mod" : 0,
   "val" : 400
+  }
+```
+This sets us the Mode to "Pressure Control Ventilation Mode"
+```JavaScript
+{ "com": "C",
+  "par" : "M",
+  "int" : "P",
+  "mod" : 0,
+  "val" : 0
   }
 ```
 
