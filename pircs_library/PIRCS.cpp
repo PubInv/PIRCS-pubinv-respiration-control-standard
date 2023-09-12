@@ -264,7 +264,7 @@ uint16_t fill_JSON_buffer_with_ack(Acknowledgement *ack,
                                     char *buff,
                                     uint16_t size) {
   uint16_t rval = sprintf(buff,
-                          "{\"ack\":\"%c\",\"err\":\"%d\",\"com\":\"%c\",\"par\":\"%c\",\"int\":\"%c\",\"mod\":\"%c\",\"val\":%d}",
+                          "{\"ack\":\"%c\",\"err\":\"%d\",\"com\":\"%c\",\"par\":\"%c\",\"int\":\"%c\",\"mod\":\"%c\",\"val\":%ld}",
                           ack->ack,
                           ack->err,
                      ack->command,
