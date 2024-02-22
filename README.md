@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10694746.svg)](https://doi.org/10.5281/zenodo.10694746)
+
 # The Public Invention Respiration Control Standard (PIRCS)
 A parallel standard to the closely related [Public Invention Respiration Data Standard](https://github.com/PubInv/respiration-data-standard), this is a control standard for controlling air drives for COVID-19 pandemic ventilators.
 
