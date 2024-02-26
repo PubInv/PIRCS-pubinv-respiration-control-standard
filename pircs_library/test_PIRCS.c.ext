@@ -109,7 +109,7 @@ static char *test_can_create_successful_set_command_and_acknowldegement_and_read
 
   // Now create an acknowledgement and verify it
   Acknowledgement ack = get_success_ack_from_command(&m);
-  mu_assert("ack does not mactch matches command",match_PIRCS_com_and_ack(&m,&ack));
+  mu_assert("ack does not match matches command",match_PIRCS_com_and_ack(&m,&ack));
   mu_assert("mismatch incorrecty reported as match",!match_PIRCS_com_and_ack(&mp,&ack));
 
   return 0;
